@@ -24,9 +24,9 @@
         <script src = "js/time_picker.js"               type = "text/javascript"></script>
 
     </head>
-    <body onload = "$('.watch').timePicker({owner:'text-field'});">
+    <body onload = "$('.watch').timePicker({owner:$('#text-field')});">
       <div class="holder">
-        <input type="text" name="text-field"><div class="watch"></div>
+        <input type="text" id="text-field"><div class="watch"></div>
       </div>
     </body>
 </html>

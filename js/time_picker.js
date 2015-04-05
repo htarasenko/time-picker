@@ -1,65 +1,73 @@
 (function($){
   jQuery.fn.timePicker = function(options){
     options = $.extend({
-      defColor:"white", //цвет элемента над которым нет курсора
-      hoverColor:"green" //цвет элемента на который наведен курсор
+      defColor:"white", //element default bg color
+      hoverColor:"green" //element hover bg color
     }, options);
   var make = function(){
     //inserting HTML of Hours into time_picker
+    var $this=$(this);
+    var i;
     var own=options.owner;
-    var content="<div id=\""+own+"\" class=\"hour_holder\">";
-    for (i=0; i<24; i++){                                 //creates 24 HRS
+    var html = "";
+    var $HoursHolder=$('<div class="hour_holder"></div>');
+    for( i = 0; i < 24; i++){                                 //creates 24 HRS
       (i<10)? zero="0":zero="";
-      content+="<div name=\""+i+"\" id=\""+own+"\" class=\"hour\">"+zero+i+":00</div>"
+      html+='<div class="hour" data-tp-hour="'+i+'">'+zero+i+':00</div>'
     }
-    content+="</div>";
-    content+="<div id=\""+own+"\" class=\"minute_holder\">";
+    $HoursHolder.html(html);
+    // content+="</div>";
+    html="";
+    var $MinutesHolder = $('<div class="minute_holder">');
     for (i=0; i<12; i++){                                 //creates 12 MNS
-      content+="<div name=\""+i+"\" id=\""+own+"\" class=\"minute\"></div>"
+      html+='<div class="minute"></div>';
     }
-    content+="</div>";
-    $(this).append(content);
+    $MinutesHolder.html(html);
+    $this.append($HoursHolder)
+           .append($MinutesHolder);
       //hide Hours, minutes 
-      $("#"+own+".hour_holder").toggle(false);
-      $("#"+own+".minute_holder").toggle(false);
+      $HoursHolder.toggle(false);
+      $MinutesHolder.toggle(false);
       //Hours_holder's events>>
-      $("#"+own+".minute_holder").mouseleave( function(){
-        $(this).toggle(false);  
+      $MinutesHolder.mouseleave( function(){
+        this.toggle(false);  
       });
       //Hours_holder's events<<
       //Hour's events>>>
-      $("#"+own+".hour").click(function (){
-        minutesChange(this);
+      $HoursHolder.click(function (e){
+        minutesChange(e);
       });
       //Hour's events<<<
-      function minutesChange(hour){
-        $("#"+own+".minute_holder").toggle(true)
-                                    .offset($(hour).offset());
-        h = $(hour).attr("name");
+      function minutesChange(e){
+        $MinutesHolder.toggle(true)
+                      .offset($(e.target).offset());
+        h = $(e.target).data("tp-hour");
         if(h<10) h="0"+h;
-        for(i=0; i<12; i++){
-          (i<2)? m="0" : m="";
-          $('[name="'+i+'"].minute').text(h+":"+m+(i*5));
-        }
+        // for(i=0; i<12; i++){
+        $MinutesHolder.children().each(function(ind, obj){
+          (ind<2)? m="0" : m="";
+          $(obj).text(h+":"+m+(ind*5));    
+        });
+        // }
       }
       //Minute's events>>>
-      $("#"+own+".minute").click(function(){
-        $("#"+own+".minute_holder").toggle(false);
-        $("#"+own+".hour_holder").toggle(false);
-        $('[name="'+own+'"]').val($(this).text());    
-//        console.log($(this).text());    
+      $MinutesHolder.click(function(e){
+        $MinutesHolder.toggle(false);
+        $HoursHolder.toggle(false);
+        own.val($(e.target).text());    
       });
       //Minute's events<<<
       //Time_picker's events>>>
-      $(this).css("background-color",options.defColor)
+      $this
+        .css("background-color",options.defColor)
         .mouseenter( function(){
-          $(this).css("background-color",options.hoverColor);
-          $("#"+own+".hour_holder").toggle(true);
+          $this.css("background-color",options.hoverColor);
+          $HoursHolder.toggle(true);
         })
         .mouseleave( function(){
-          $(this).css("background-color",options.defColor);
-          $("#"+own+".hour_holder").toggle(false);
-          $("#"+own+".minute_holder").toggle(false);
+          $this.css("background-color",options.defColor);
+          $MinutesHolder.toggle(false);
+          $HoursHolder.toggle(false);
         })
         .click( function(){
           $(this).css("background-color", "black");
