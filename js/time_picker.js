@@ -73,7 +73,6 @@
           $(this).css("background-color", "black");
           
         });
-      //Time_picker's events<<<
       };
     return this.each(make); 
     };
